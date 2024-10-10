@@ -60,7 +60,7 @@ fn resolve_uv_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -140,6 +140,9 @@ fn resolve_uv_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -199,7 +202,7 @@ fn resolve_uv_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -279,6 +282,9 @@ fn resolve_uv_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -339,7 +345,7 @@ fn resolve_uv_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -419,6 +425,9 @@ fn resolve_uv_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -511,7 +520,7 @@ fn resolve_pyproject_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -591,6 +600,9 @@ fn resolve_pyproject_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -652,7 +664,7 @@ fn resolve_pyproject_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -709,6 +721,9 @@ fn resolve_pyproject_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -779,7 +794,7 @@ fn resolve_pyproject_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -859,6 +874,9 @@ fn resolve_pyproject_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -943,7 +961,7 @@ fn resolve_index_url() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -1046,6 +1064,9 @@ fn resolve_index_url() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -1107,7 +1128,7 @@ fn resolve_index_url() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -1232,6 +1253,9 @@ fn resolve_index_url() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -1316,7 +1340,7 @@ fn resolve_find_links() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -1396,6 +1420,9 @@ fn resolve_find_links() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -1479,7 +1506,7 @@ fn resolve_top_level() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -1536,6 +1563,9 @@ fn resolve_top_level() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -1612,7 +1642,7 @@ fn resolve_top_level() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -1714,6 +1744,9 @@ fn resolve_top_level() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -1773,7 +1806,7 @@ fn resolve_top_level() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -1875,6 +1908,9 @@ fn resolve_top_level() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -1958,7 +1994,7 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2015,6 +2051,9 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -2081,7 +2120,7 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2138,6 +2177,9 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -2204,7 +2246,7 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2261,6 +2303,9 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -2329,7 +2374,7 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2386,6 +2431,9 @@ fn resolve_user_configuration() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -2473,7 +2521,7 @@ fn resolve_tool() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2509,6 +2557,7 @@ fn resolve_tool() -> anyhow::Result<()> {
                 LowestDirect,
             ),
             prerelease: None,
+            dependency_metadata: None,
             config_settings: None,
             no_build_isolation: None,
             no_build_isolation_package: None,
@@ -2543,6 +2592,9 @@ fn resolve_tool() -> anyhow::Result<()> {
             allow_insecure_host: [],
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             config_setting: ConfigSettings(
                 {},
             ),
@@ -2626,7 +2678,7 @@ fn resolve_poetry_toml() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2683,6 +2735,9 @@ fn resolve_poetry_toml() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -2777,7 +2832,7 @@ fn resolve_both() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -2857,6 +2912,9 @@ fn resolve_both() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -2943,7 +3001,7 @@ fn resolve_config_file() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -3023,6 +3081,9 @@ fn resolve_config_file() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -3085,11 +3146,11 @@ fn resolve_config_file() -> anyhow::Result<()> {
 
     ----- stderr -----
     error: Failed to parse: `[CACHE_DIR]/uv.toml`
-      Caused by: TOML parse error at line 1, column 1
+      Caused by: TOML parse error at line 1, column 2
       |
     1 | [project]
-      | ^
-    unknown field `project`
+      |  ^^^^^^^
+    unknown field `project`, expected one of `native-tls`, `offline`, `no-cache`, `cache-dir`, `preview`, `python-preference`, `python-downloads`, `concurrent-downloads`, `concurrent-builds`, `concurrent-installs`, `index-url`, `extra-index-url`, `no-index`, `find-links`, `index-strategy`, `keyring-provider`, `allow-insecure-host`, `resolution`, `prerelease`, `dependency-metadata`, `config-settings`, `no-build-isolation`, `no-build-isolation-package`, `exclude-newer`, `link-mode`, `compile-bytecode`, `no-sources`, `upgrade`, `upgrade-package`, `reinstall`, `reinstall-package`, `no-build`, `no-build-package`, `no-binary`, `no-binary-package`, `publish-url`, `trusted-publishing`, `pip`, `cache-keys`, `override-dependencies`, `constraint-dependencies`, `environments`, `workspace`, `sources`, `dev-dependencies`, `managed`, `package`
 
     "###
     );
@@ -3119,7 +3180,7 @@ fn resolve_config_file() -> anyhow::Result<()> {
     ----- stdout -----
 
     ----- stderr -----
-    warning: The `--config-file` argument expects to receive a `uv.toml` file, not a `pyproject.toml`. If you're trying to run a command from another project, use the `--directory` argument instead.
+    warning: The `--config-file` argument expects to receive a `uv.toml` file, not a `pyproject.toml`. If you're trying to run a command from another project, use the `--project` argument instead.
     error: Failed to parse: `[CACHE_DIR]/pyproject.toml`
       Caused by: TOML parse error at line 9, column 3
       |
@@ -3184,7 +3245,7 @@ fn resolve_skip_empty() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -3241,6 +3302,9 @@ fn resolve_skip_empty() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: LowestDirect,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,
@@ -3310,7 +3374,7 @@ fn resolve_skip_empty() -> anyhow::Result<()> {
         connectivity: Online,
         show_settings: true,
         preview: Disabled,
-        python_preference: OnlySystem,
+        python_preference: Managed,
         python_downloads: Automatic,
         no_progress: false,
     }
@@ -3367,6 +3431,157 @@ fn resolve_skip_empty() -> anyhow::Result<()> {
             dependency_mode: Transitive,
             resolution: Highest,
             prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
+            output_file: None,
+            no_strip_extras: false,
+            no_strip_markers: false,
+            no_annotate: false,
+            no_header: false,
+            custom_compile_command: None,
+            generate_hashes: false,
+            config_setting: ConfigSettings(
+                {},
+            ),
+            python_version: None,
+            python_platform: None,
+            universal: false,
+            exclude_newer: Some(
+                ExcludeNewer(
+                    2024-03-25T00:00:00Z,
+                ),
+            ),
+            no_emit_package: [],
+            emit_index_url: false,
+            emit_find_links: false,
+            emit_build_options: false,
+            emit_marker_expression: false,
+            emit_index_annotation: false,
+            annotation_style: Split,
+            link_mode: Clone,
+            compile_bytecode: false,
+            sources: Enabled,
+            hash_checking: None,
+            upgrade: None,
+            reinstall: None,
+        },
+    }
+
+    ----- stderr -----
+    "###
+    );
+
+    Ok(())
+}
+
+/// Deserialize an insecure host.
+#[test]
+#[cfg_attr(
+    windows,
+    ignore = "Configuration tests are not yet supported on Windows"
+)]
+fn allow_insecure_host() -> anyhow::Result<()> {
+    let context = TestContext::new("3.12");
+
+    let config = context.temp_dir.child("uv.toml");
+    config.write_str(indoc::indoc! {r#"
+        allow-insecure-host = ["google.com", { host = "example.com" }]
+    "#})?;
+
+    let requirements_in = context.temp_dir.child("requirements.in");
+    requirements_in.write_str("anyio>3.0.0")?;
+
+    uv_snapshot!(context.filters(), add_shared_args(context.pip_compile())
+        .arg("--show-settings")
+        .arg("requirements.in"), @r###"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    GlobalSettings {
+        quiet: false,
+        verbose: 0,
+        color: Auto,
+        native_tls: false,
+        concurrency: Concurrency {
+            downloads: 50,
+            builds: 16,
+            installs: 8,
+        },
+        connectivity: Online,
+        show_settings: true,
+        preview: Disabled,
+        python_preference: Managed,
+        python_downloads: Automatic,
+        no_progress: false,
+    }
+    CacheSettings {
+        no_cache: false,
+        cache_dir: Some(
+            "[CACHE_DIR]/",
+        ),
+    }
+    PipCompileSettings {
+        src_file: [
+            "requirements.in",
+        ],
+        constraint: [],
+        override: [],
+        build_constraint: [],
+        constraints_from_workspace: [],
+        overrides_from_workspace: [],
+        environments: SupportedEnvironments(
+            [],
+        ),
+        refresh: None(
+            Timestamp(
+                SystemTime {
+                    tv_sec: [TIME],
+                    tv_nsec: [TIME],
+                },
+            ),
+        ),
+        settings: PipSettings {
+            index_locations: IndexLocations {
+                index: None,
+                extra_index: [],
+                flat_index: [],
+                no_index: false,
+            },
+            python: None,
+            system: false,
+            extras: None,
+            break_system_packages: false,
+            target: None,
+            prefix: None,
+            index_strategy: FirstIndex,
+            keyring_provider: Disabled,
+            allow_insecure_host: [
+                TrustedHost {
+                    scheme: None,
+                    host: "google.com",
+                    port: None,
+                },
+                TrustedHost {
+                    scheme: None,
+                    host: "example.com",
+                    port: None,
+                },
+            ],
+            no_build_isolation: false,
+            no_build_isolation_package: [],
+            build_options: BuildOptions {
+                no_binary: None,
+                no_build: None,
+            },
+            allow_empty_requirements: false,
+            strict: false,
+            dependency_mode: Transitive,
+            resolution: Highest,
+            prerelease: IfNecessaryOrExplicit,
+            dependency_metadata: DependencyMetadata(
+                {},
+            ),
             output_file: None,
             no_strip_extras: false,
             no_strip_markers: false,

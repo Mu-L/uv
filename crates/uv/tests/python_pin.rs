@@ -35,8 +35,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r#"any"#);
 
     // Without arguments, we read the current pin
@@ -50,8 +49,7 @@ fn python_pin() {
     "###);
 
     // We should not mutate the file
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r#"any"#);
 
     // Request Python 3.12
@@ -64,8 +62,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r###"
     3.12
     "###);
@@ -80,8 +77,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r###"
     3.11
     "###);
@@ -96,8 +92,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r###"
     cpython
     "###);
@@ -112,8 +107,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r###"
     cpython@3.12
     "###);
@@ -128,8 +122,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r###"
     cpython@3.12
     "###);
@@ -144,8 +137,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     assert_snapshot!(python_version, @r###"
     cpython-3.12-any-any-any
     "###);
@@ -160,8 +152,7 @@ fn python_pin() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -181,11 +172,10 @@ fn python_pin() {
         Updated `.python-version` from `[PYTHON-3.11]` -> `pypy`
 
         ----- stderr -----
-        warning: No interpreter found for PyPy in system path
+        warning: No interpreter found for PyPy in managed installations or system path
         "###);
 
-        let python_version =
-            fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+        let python_version = context.read(PYTHON_VERSION_FILENAME);
         assert_snapshot!(python_version, @r###"
         pypy
         "###);
@@ -202,11 +192,10 @@ fn python_pin() {
         Updated `.python-version` from `pypy` -> `3.7`
 
         ----- stderr -----
-        warning: No interpreter found for Python 3.7 in system path
+        warning: No interpreter found for Python 3.7 in managed installations or system path
         "###);
 
-        let python_version =
-            fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+        let python_version = context.read(PYTHON_VERSION_FILENAME);
         assert_snapshot!(python_version, @r###"
     3.7
     "###);
@@ -227,13 +216,14 @@ fn python_pin_no_python() {
     Pinned `.python-version` to `3.12`
 
     ----- stderr -----
-    warning: No interpreter found for Python 3.12 in system path
+    warning: No interpreter found for Python 3.12 in managed installations or system path
     "###);
 }
 
 #[test]
 fn python_pin_compatible_with_requires_python() -> anyhow::Result<()> {
-    let context: TestContext = TestContext::new_with_versions(&["3.10", "3.11"]);
+    let context: TestContext =
+        TestContext::new_with_versions(&["3.10", "3.11"]).with_filtered_python_sources();
     let pyproject_toml = context.temp_dir.child("pyproject.toml");
     pyproject_toml.write_str(
         r#"
@@ -305,18 +295,28 @@ fn python_pin_compatible_with_requires_python() -> anyhow::Result<()> {
     ----- stderr -----
     "###);
 
+    // Request a version that is compatible and uses a Python variant
+    uv_snapshot!(context.filters(), context.python_pin().arg("3.13t"), @r###"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Updated `.python-version` from `3.11` -> `3.13t`
+
+    ----- stderr -----
+    warning: No interpreter found for Python 3.13t in [PYTHON SOURCES]
+    "###);
+
     // Request a implementation version that is compatible
     uv_snapshot!(context.filters(), context.python_pin().arg("cpython@3.11"), @r###"
     success: true
     exit_code: 0
     ----- stdout -----
-    Updated `.python-version` from `3.11` -> `cpython@3.11`
+    Updated `.python-version` from `3.13t` -> `cpython@3.11`
 
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -415,7 +415,7 @@ fn warning_pinned_python_version_not_installed() -> anyhow::Result<()> {
         3.12
 
         ----- stderr -----
-        warning: Failed to resolve pinned Python version `3.12`: No interpreter found for Python 3.12 in system path or `py` launcher
+        warning: Failed to resolve pinned Python version `3.12`: No interpreter found for Python 3.12 in managed installations, system path, or `py` launcher
         "###);
     } else {
         uv_snapshot!(context.filters(), context.python_pin(), @r###"
@@ -425,7 +425,7 @@ fn warning_pinned_python_version_not_installed() -> anyhow::Result<()> {
         3.12
 
         ----- stderr -----
-        warning: Failed to resolve pinned Python version `3.12`: No interpreter found for Python 3.12 in system path
+        warning: Failed to resolve pinned Python version `3.12`: No interpreter found for Python 3.12 in managed installations or system path
         "###);
     }
 
@@ -444,7 +444,7 @@ fn python_pin_resolve_no_python() {
         ----- stdout -----
 
         ----- stderr -----
-        error: No interpreter found for Python 3.12 in system path or `py` launcher
+        error: No interpreter found for Python 3.12 in managed installations, system path, or `py` launcher
         "###);
     } else {
         uv_snapshot!(context.filters(), context.python_pin().arg("--resolved").arg("3.12"), @r###"
@@ -453,7 +453,7 @@ fn python_pin_resolve_no_python() {
         ----- stdout -----
 
         ----- stderr -----
-        error: No interpreter found for Python 3.12 in system path
+        error: No interpreter found for Python 3.12 in managed installations or system path
         "###);
     }
 }
@@ -472,8 +472,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -492,8 +491,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -512,8 +510,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -532,8 +529,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -552,8 +548,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -572,8 +567,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -597,8 +591,7 @@ fn python_pin_resolve() {
     ----- stderr -----
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -616,11 +609,10 @@ fn python_pin_resolve() {
     ----- stdout -----
 
     ----- stderr -----
-    error: No interpreter found for PyPy in system path
+    error: No interpreter found for PyPy in managed installations or system path
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {
@@ -638,11 +630,10 @@ fn python_pin_resolve() {
     ----- stdout -----
 
     ----- stderr -----
-    error: No interpreter found for Python 3.7 in system path
+    error: No interpreter found for Python 3.7 in managed installations or system path
     "###);
 
-    let python_version =
-        fs_err::read_to_string(context.temp_dir.join(PYTHON_VERSION_FILENAME)).unwrap();
+    let python_version = context.read(PYTHON_VERSION_FILENAME);
     insta::with_settings!({
         filters => context.filters(),
     }, {

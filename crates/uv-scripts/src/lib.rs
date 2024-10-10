@@ -5,16 +5,43 @@ use std::str::FromStr;
 use std::sync::LazyLock;
 
 use memchr::memmem::Finder;
-use pep440_rs::VersionSpecifiers;
 use serde::Deserialize;
 use thiserror::Error;
 
-use pep508_rs::PackageName;
-use pypi_types::VerbatimParsedUrl;
+use uv_pep440::VersionSpecifiers;
+use uv_pep508::PackageName;
+use uv_pypi_types::VerbatimParsedUrl;
 use uv_settings::{GlobalOptions, ResolverInstallerOptions};
-use uv_workspace::pyproject::Source;
+use uv_workspace::pyproject::Sources;
 
 static FINDER: LazyLock<Finder> = LazyLock::new(|| Finder::new(b"# /// script"));
+
+/// A PEP 723 item, either read from a script on disk or provided via `stdin`.
+#[derive(Debug)]
+pub enum Pep723Item {
+    /// A PEP 723 script read from disk.
+    Script(Pep723Script),
+    /// A PEP 723 script provided via `stdin`.
+    Stdin(Pep723Stdin),
+}
+
+impl Pep723Item {
+    /// Return the [`Pep723Metadata`] associated with the item.
+    pub fn metadata(&self) -> &Pep723Metadata {
+        match self {
+            Self::Script(script) => &script.metadata,
+            Self::Stdin(stdin) => &stdin.metadata,
+        }
+    }
+
+    /// Consume the item and return the associated [`Pep723Metadata`].
+    pub fn into_metadata(self) -> Pep723Metadata {
+        match self {
+            Self::Script(script) => script.metadata,
+            Self::Stdin(stdin) => stdin.metadata,
+        }
+    }
+}
 
 /// A PEP 723 script, including its [`Pep723Metadata`].
 #[derive(Debug)]
@@ -41,13 +68,14 @@ impl Pep723Script {
         };
 
         // Extract the `script` tag.
-        let Some(ScriptTag {
+        let ScriptTag {
             prelude,
             metadata,
             postlude,
-        }) = ScriptTag::parse(&contents)?
-        else {
-            return Ok(None);
+        } = match ScriptTag::parse(&contents) {
+            Ok(Some(tag)) => tag,
+            Ok(None) => return Ok(None),
+            Err(err) => return Err(err),
         };
 
         // Parse the metadata.
@@ -64,7 +92,7 @@ impl Pep723Script {
     /// Reads a Python script and generates a default PEP 723 metadata table.
     ///
     /// See: <https://peps.python.org/pep-0723/>
-    pub async fn create(
+    pub async fn init(
         file: impl AsRef<Path>,
         requires_python: &VersionSpecifiers,
     ) -> Result<Self, Pep723Error> {
@@ -94,6 +122,51 @@ impl Pep723Script {
         })
     }
 
+    /// Create a PEP 723 script at the given path.
+    pub async fn create(
+        file: impl AsRef<Path>,
+        requires_python: &VersionSpecifiers,
+        existing_contents: Option<Vec<u8>>,
+    ) -> Result<(), Pep723Error> {
+        let file = file.as_ref();
+
+        let script_name = file
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or_else(|| Pep723Error::InvalidFilename(file.to_string_lossy().to_string()))?;
+
+        let default_metadata = indoc::formatdoc! {r#"
+            requires-python = "{requires_python}"
+            dependencies = []
+            "#,
+        };
+        let metadata = serialize_metadata(&default_metadata);
+
+        let script = if let Some(existing_contents) = existing_contents {
+            indoc::formatdoc! {r#"
+            {metadata}
+            {content}
+            "#,
+            content = String::from_utf8(existing_contents).map_err(|err| Pep723Error::Utf8(err.utf8_error()))?}
+        } else {
+            indoc::formatdoc! {r#"
+            {metadata}
+
+            def main() -> None:
+                print("Hello from {name}!")
+
+
+            if __name__ == "__main__":
+                main()
+        "#,
+                metadata = metadata,
+                name = script_name,
+            }
+        };
+
+        Ok(fs_err::tokio::write(file, script).await?)
+    }
+
     /// Replace the existing metadata in the file with new metadata and write the updated content.
     pub async fn write(&self, metadata: &str) -> Result<(), Pep723Error> {
         let content = format!(
@@ -103,7 +176,32 @@ impl Pep723Script {
             self.postlude
         );
 
-        Ok(fs_err::tokio::write(&self.path, content).await?)
+        fs_err::tokio::write(&self.path, content).await?;
+
+        Ok(())
+    }
+}
+
+/// A PEP 723 script, provided via `stdin`.
+#[derive(Debug)]
+pub struct Pep723Stdin {
+    metadata: Pep723Metadata,
+}
+
+impl Pep723Stdin {
+    /// Parse the PEP 723 `script` metadata from `stdin`.
+    pub fn parse(contents: &[u8]) -> Result<Option<Self>, Pep723Error> {
+        // Extract the `script` tag.
+        let ScriptTag { metadata, .. } = match ScriptTag::parse(contents) {
+            Ok(Some(tag)) => tag,
+            Ok(None) => return Ok(None),
+            Err(err) => return Err(err),
+        };
+
+        // Parse the metadata.
+        let metadata = Pep723Metadata::from_str(&metadata)?;
+
+        Ok(Some(Self { metadata }))
     }
 }
 
@@ -113,7 +211,7 @@ impl Pep723Script {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Pep723Metadata {
-    pub dependencies: Option<Vec<pep508_rs::Requirement<VerbatimParsedUrl>>>,
+    pub dependencies: Option<Vec<uv_pep508::Requirement<VerbatimParsedUrl>>>,
     pub requires_python: Option<VersionSpecifiers>,
     pub tool: Option<Tool>,
     /// The raw unserialized document.
@@ -147,21 +245,25 @@ pub struct ToolUv {
     pub globals: GlobalOptions,
     #[serde(flatten)]
     pub top_level: ResolverInstallerOptions,
-    pub sources: Option<BTreeMap<PackageName, Source>>,
+    pub sources: Option<BTreeMap<PackageName, Sources>>,
 }
 
 #[derive(Debug, Error)]
 pub enum Pep723Error {
+    #[error("An opening tag (`# /// script`) was found without a closing tag (`# ///`). Ensure that every line between the opening and closing tags (including empty lines) starts with a leading `#`.")]
+    UnclosedBlock,
     #[error(transparent)]
     Io(#[from] io::Error),
     #[error(transparent)]
     Utf8(#[from] std::str::Utf8Error),
     #[error(transparent)]
     Toml(#[from] toml::de::Error),
+    #[error("Invalid filename `{0}` supplied")]
+    InvalidFilename(String),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-struct ScriptTag {
+pub struct ScriptTag {
     /// The content of the script before the metadata block.
     prelude: String,
     /// The metadata block.
@@ -199,7 +301,7 @@ impl ScriptTag {
     /// - Postlude: `import requests\n\nprint("Hello, World!")\n`
     ///
     /// See: <https://peps.python.org/pep-0723/>
-    fn parse(contents: &[u8]) -> Result<Option<Self>, Pep723Error> {
+    pub fn parse(contents: &[u8]) -> Result<Option<Self>, Pep723Error> {
         // Identify the opening pragma.
         let Some(index) = FINDER.find(contents) else {
             return Ok(None);
@@ -272,7 +374,7 @@ impl ScriptTag {
         //
         // The latter `///` is the closing pragma
         let Some(index) = toml.iter().rev().position(|line| *line == "///") else {
-            return Ok(None);
+            return Err(Pep723Error::UnclosedBlock);
         };
         let index = toml.len() - index;
 
@@ -347,13 +449,12 @@ fn serialize_metadata(metadata: &str) -> String {
     output.push('\n');
 
     for line in metadata.lines() {
-        if line.is_empty() {
-            output.push('\n');
-        } else {
-            output.push_str("# ");
+        output.push('#');
+        if !line.is_empty() {
+            output.push(' ');
             output.push_str(line);
-            output.push('\n');
         }
+        output.push('\n');
     }
 
     output.push_str("# ///");
@@ -364,7 +465,7 @@ fn serialize_metadata(metadata: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::{serialize_metadata, ScriptTag};
+    use crate::{serialize_metadata, Pep723Error, ScriptTag};
 
     #[test]
     fn missing_space() {
@@ -374,7 +475,10 @@ mod tests {
             # ///
         "};
 
-        assert_eq!(ScriptTag::parse(contents.as_bytes()).unwrap(), None);
+        assert!(matches!(
+            ScriptTag::parse(contents.as_bytes()),
+            Err(Pep723Error::UnclosedBlock)
+        ));
     }
 
     #[test]
@@ -388,7 +492,10 @@ mod tests {
             # ]
         "};
 
-        assert_eq!(ScriptTag::parse(contents.as_bytes()).unwrap(), None);
+        assert!(matches!(
+            ScriptTag::parse(contents.as_bytes()),
+            Err(Pep723Error::UnclosedBlock)
+        ));
     }
 
     #[test]

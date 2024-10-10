@@ -6,9 +6,9 @@ use itertools::Itertools;
 use owo_colors::OwoColorize;
 use rustc_hash::{FxBuildHasher, FxHashMap};
 
-use distribution_types::{InstalledMetadata, Name};
-use pep440_rs::Version;
+use uv_distribution_types::{InstalledMetadata, Name};
 use uv_normalize::PackageName;
+use uv_pep440::Version;
 
 use crate::commands::pip::operations::Changelog;
 use crate::commands::{elapsed, ChangeEvent, ChangeEventKind};
@@ -43,17 +43,25 @@ pub(crate) struct DefaultInstallLogger;
 
 impl InstallLogger for DefaultInstallLogger {
     fn on_audit(&self, count: usize, start: std::time::Instant, printer: Printer) -> fmt::Result {
-        let s = if count == 1 { "" } else { "s" };
-        writeln!(
-            printer.stderr(),
-            "{}",
-            format!(
-                "Audited {} {}",
-                format!("{count} package{s}").bold(),
-                format!("in {}", elapsed(start.elapsed())).dimmed()
+        if count == 0 {
+            writeln!(
+                printer.stderr(),
+                "{}",
+                format!("Audited in {}", elapsed(start.elapsed())).dimmed()
             )
-            .dimmed()
-        )
+        } else {
+            let s = if count == 1 { "" } else { "s" };
+            writeln!(
+                printer.stderr(),
+                "{}",
+                format!(
+                    "Audited {} {}",
+                    format!("{count} package{s}").bold(),
+                    format!("in {}", elapsed(start.elapsed())).dimmed()
+                )
+                .dimmed()
+            )
+        }
     }
 
     fn on_prepare(&self, count: usize, start: std::time::Instant, printer: Printer) -> fmt::Result {
@@ -404,17 +412,25 @@ impl ResolveLogger for DefaultResolveLogger {
         start: std::time::Instant,
         printer: Printer,
     ) -> fmt::Result {
-        let s = if count == 1 { "" } else { "s" };
-        writeln!(
-            printer.stderr(),
-            "{}",
-            format!(
-                "Resolved {} {}",
-                format!("{count} package{s}").bold(),
-                format!("in {}", elapsed(start.elapsed())).dimmed()
+        if count == 0 {
+            writeln!(
+                printer.stderr(),
+                "{}",
+                format!("Resolved in {}", elapsed(start.elapsed())).dimmed()
             )
-            .dimmed()
-        )
+        } else {
+            let s = if count == 1 { "" } else { "s" };
+            writeln!(
+                printer.stderr(),
+                "{}",
+                format!(
+                    "Resolved {} {}",
+                    format!("{count} package{s}").bold(),
+                    format!("in {}", elapsed(start.elapsed())).dimmed()
+                )
+                .dimmed()
+            )
+        }
     }
 }
 
